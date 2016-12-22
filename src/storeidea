@@ -1,0 +1,69 @@
+#!/usr/bin/env python
+#coding=utf-8
+
+'''
+use sqlite dbs.
+you can set your own dbs below.you should use sqlite3 databases rather than others.
+
+my db schema:
+CREATE TABLE argue (
+TIME int primary key not null,
+CONTENT TEXT not null);
+'''
+
+db_path =   'your db path here';
+
+import sqlite3
+import sys
+import time
+
+def insert(s):
+    t  = int(time.time());
+    str_t   =   str(t);
+    conn    =   sqlite3.connect(db_path);
+    cmd =   "insert into argue values ("+str_t+","+'\"'+s+'\"'+");";
+    conn.execute(cmd);
+    conn.commit();
+    conn.close();
+
+def show(quiet):
+    conn    =   sqlite3.connect(db_path);
+    cmd =   "select * from argue";
+    cursor  =   conn.execute(cmd);
+    if not quiet:
+        for row in cursor:
+            print time.strftime("%Y-%m-%d",time.localtime(row[0]));
+            print row[1];
+    else:
+        for row in cursor:
+            print time.strftime("%Y-%m-%d",time.localtime(row[0]))+" ",
+            print row[1];
+    conn.close();
+
+if __name__ == '__main__':
+    reload(sys);
+    sys.setdefaultencoding('utf-8');
+    SHOW    =   False;
+    QUIET   =   False;
+    content =   "";
+
+    if '-s' in sys.argv or '--show' in sys.argv:
+        SHOW    =   True;
+
+    if '-q' in sys.argv or '--quiet' in sys.argv:
+        QUIET   =   True;
+
+    if '-i' in sys.argv or '--insert' in sys.argv:
+        INSERT  =   True;
+
+    if SHOW:
+        show(QUIET);
+    else:
+        try:
+            while True:
+                line    =   raw_input();
+                content =   content + line;
+        except EOFError , e:
+            pass
+        if content != '':
+            insert(content);

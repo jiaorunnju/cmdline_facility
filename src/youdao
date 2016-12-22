@@ -1,0 +1,107 @@
+#!/usr/bin/env python
+# coding=utf-8
+'''
+Created on Oct 29, 2016
+
+@author: diga
+'''
+import requests
+import sys
+
+#your key and keyfrom
+key = ""
+keyfrom = ""
+
+class Youdao(object):
+    url = "http://fanyi.youdao.com/openapi.do"
+    errTable = {
+        '20':'too long to translate!',
+        '30':'cannot translate!',
+        '40':'do not support this kind of language!',
+        '50':'invalid key!',
+        '60':'no dictionary translate!'
+        }
+
+    def purple(self, string):
+        print("\033[0;34m" + string + "\033[0m")
+
+    def yellow(self, string):
+        print("\033[1;31m" + string + "\033[0m")
+
+    def printList(self, data):
+        for d in data:
+            print d + ";",
+        print
+
+    def dispBasic(self, basic):
+        if basic.has_key('phonetic'):
+            phonetic = basic['phonetic']
+            print "/" + phonetic + "/"
+
+        if basic.has_key("explains"):
+            explain = basic['explains']
+            self.printList(explain)
+
+    def printDict(self, dic):
+        for i in dic:
+            if i.has_key('key'):
+                self.yellow(i['key'])
+                self.printList(i['value'])
+
+    def translate(self, string):
+        try:
+            data = {
+                'keyfrom':keyfrom,
+                'key':key,
+                'type':'data',
+                'doctype':'json',
+                'version':'1.1',
+                'q':string
+                }
+
+            querydata = requests.get(self.url, params=data)
+            jsonresult = querydata.json()
+
+            errcode = jsonresult['errorCode']
+            if self.errTable.has_key(errcode):
+                print self.errTable[errcode]
+                return
+
+            if jsonresult.has_key("translation"):
+                translation = jsonresult['translation']
+                self.purple("------------youdao translation-----------")
+                self.printList(translation)
+
+            if jsonresult.has_key("basic"):
+                basic = jsonresult['basic']
+                self.purple("------------basic  translation-----------")
+                self.dispBasic(basic)
+
+            if jsonresult.has_key("web"):
+                web = jsonresult['web']
+                self.purple("------------web    translation-----------")
+                self.printDict(web)
+                self.purple("-----------------------------------------")
+            print
+        except requests.exceptions.Timeout, e:
+            print e.message
+            sys.exit(1)
+        except BaseException ,e:
+            print e.message
+            sys.exit(1)
+
+if __name__ == "__main__":
+    youdao = Youdao()
+    arg = sys.argv
+    if len(arg) >= 2:
+        msg = arg[1:];
+        for i in msg:
+            youdao.translate(i)
+    else:
+        while True:
+            try:
+                msg = raw_input("Please input the sentence:\n")
+                youdao.translate(msg)
+            except EOFError, e:
+                print e.message
+                exit(0)
