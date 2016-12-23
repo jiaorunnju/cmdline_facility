@@ -14,4 +14,8 @@ Make sure that you have installed python request library.(I think it is a good l
 Sometimes I just come up with some arguments about...and maybe I should write it down.However,it is quite annoying that there are so many txt files.So I use sqlite3 to setup a database to store my ideas.Similar to the mergecol above,it just provide simple tools,storing time and content.However,with power tools like grep,you can do a lot of things such as search with keywords and check what you write several days ago.
 It is lite,and so is the sqlite3
 
+-s : show all the content you insert in
+-i : insert the words
+-q : quiet,without newline after the date
+
 (maybe I am just too lazy.But that's not a problem.)You can modify it as you like.I think you can do better than me.
