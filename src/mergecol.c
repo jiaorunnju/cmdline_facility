@@ -15,34 +15,28 @@
 char buff[MAX];
 char before[MAX];
 char head[HEAD];
-char backup[MAX];
+char headbefore[HEAD];
 
 int tag = 0;
 void handleLine(){
-    strcpy(backup,buff);
-    char *temp = strtok(buff," \t");
-    char *t;
-    if(strcmp(temp,head) == 0){
-        t = temp+strlen(temp)+1;
-        strcat(before," ");
-        strcat(before,t);
+    if(strcmp(head,headbefore) != 0 && tag !=0){
+        printf("%s%s\n",headbefore,before);
+        strcpy(headbefore,head);
+        strcpy(before,buff);
     }else{
-        if(tag != 0){
-            printf("%s\n",before);
-        }
-        strcpy(before,backup);
-        strcpy(head,temp);
-        ++tag;
+        strcpy(headbefore,head);
+        strcat(before,buff);
     }
+    ++tag;
 }
 
 int main(int argc,char *argv[]){
     head[0] = '\0';
     before[0] = '\0';
-
-    while (fgets(buff,LINE,stdin) != NULL){
+    while(scanf("%s",head) != EOF){
+        fgets(buff,LINE,stdin);
         buff[strlen(buff)-1] = '\0';
         handleLine();
     }
-    printf("%s\n",before);
+    printf("%s%s\n",headbefore,before);
 }
