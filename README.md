@@ -18,4 +18,8 @@ It is lite,and so is the sqlite3
 -i : insert the words
 -q : quiet,without newline after the date
 
+####genMakefile.sh
+This is a script to generate makefile for C and C++.Because it is hard to deal with the dependance between source files when the project is large.So I wrote this shell script to help with it.You should have install echo,awk,gcc to use it.What you should do is just put this in your project-root directory and run the command.It can deal with all the dependance itself with gcc.Or you can put it in your ~/bin and add it to your path,which is recommended.If you have any good advice,just tell me and
+help improve it
+
 (maybe I am just too lazy.But that's not a problem.)You can modify it as you like.I think you can do better than me.
