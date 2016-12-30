@@ -15,15 +15,21 @@ then
     mkdir bin
 fi
 
+if [ ! -d "obj" ]
+then
+    mkdir obj
+fi
+
 FILETYPE='.*\.\(c\|cpp\)'
 FILES=`find . -regex "$FILETYPE"`
 
-echo "CC=g++">>makefile
+echo "CC=clang++">>makefile
 echo "CFLAGS= -std=c++11 -g ">>makefile
 echo -n "Obj= " >>makefile
 for file in $FILES
 do
-    echo -n "${file%.*}.o " >>makefile
+	temp="${file%.*}.o"
+    echo -n "obj/${temp##*/} " >>makefile
 done
 echo >>makefile
 echo -n "bin/main: " >>makefile
@@ -33,10 +39,12 @@ echo '$(CC) $(CFLAGS) $(Obj) -o bin/main'>>makefile
 
 for file in $FILES
 do
-    echo -n "${file%.*}.o : ">>makefile
+	temp="${file%.*}.o"
+    echo -n "obj/${temp##*/} : ">>makefile
     gcc -MM $file | awk -F ":" '{print $2}'>>makefile
 	echo -ne '\t$(CC) $(CFLAGS) -c '>> makefile
-	echo "$file">>makefile
+	echo -n "$file">>makefile
+	echo " -o obj/${temp##*/} ">>makefile
 done
 
 echo "">>makefile
