@@ -15,9 +15,11 @@ then
     mkdir bin
 fi
 
-FILETYPE='*.[c|cpp]'
-FILES=`find . -name "$FILETYPE"`
+FILETYPE='.*\.\(c\|cpp\)'
+FILES=`find . -regex "$FILETYPE"`
 
+echo "CC=g++">>makefile
+echo "CFLAGS= -std=c++11 -g ">>makefile
 echo -n "Obj= " >>makefile
 for file in $FILES
 do
@@ -27,17 +29,20 @@ echo >>makefile
 echo -n "bin/main: " >>makefile
 echo '${Obj}'>>makefile
 echo -ne '\t'>>makefile
-echo 'g++ $(Obj) -o bin/main'>>makefile
-echo "">>makefile
+echo '$(CC) $(CFLAGS) $(Obj) -o bin/main'>>makefile
 
 for file in $FILES
 do
     echo -n "${file%.*}.o : ">>makefile
     gcc -MM $file | awk -F ":" '{print $2}'>>makefile
+	echo -ne '\t$(CC) $(CFLAGS) -c '>> makefile
+	echo "$file">>makefile
 done
 
 echo "">>makefile
 
-echo '.PHONY : clean'>>makefile
+echo '.PHONY : clean run'>>makefile
 echo 'clean:'>>makefile
 echo -e '\t-rm $(Obj)'>>makefile
+echo 'run:'>>makefile
+echo -e '\t./bin/main'>>makefile
